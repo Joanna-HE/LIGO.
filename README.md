@@ -20,6 +20,6 @@ Code, paper, video are coming soon......
 
 <div align="center">
     <div align="center">
-        <img src="https://github.com/Joanna-HE/LIGO/raw/main/images/Sample.png" width = 75% >
+        <img src="https://github.com/Joanna-HE/LIGO/blob/main/image/Sample.png" width = 75% >
     </div>
 </div>
