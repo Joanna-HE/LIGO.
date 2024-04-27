@@ -15,3 +15,11 @@ Code, paper, video are coming soon......
 5. No requirement for GNSS observations to be obtained exactly at the beginning or end time of LiDAR scans.
 6. Robustness to large outliers and high noise levels in GNSS observations.
 
+# Demo
+**Performance on a sequence with severe LiDAR degeneracy**
+
+<div align="center">
+    <div align="center">
+        <img src="https://github.com/Joanna-HE/LIGO/raw/main/images/Sample.png" width = 75% >
+    </div>
+</div>
