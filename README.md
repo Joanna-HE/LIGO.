@@ -4,6 +4,10 @@
 
 Code, paper, video are coming soon......
 
+# Developers:
+The codes of this repo are contributed by:
+[Dongjiao He (贺东娇)](https://github.com/Joanna-HE)
+
 # Properties
 
 **LIGO is a multi-sensor fusion framework that maximizes the complementary properties of both LiDAR and GNSS systems**. This package achieves the following properties:
