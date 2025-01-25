@@ -19,6 +19,30 @@ The codes of this repo are contributed by:
 5. No requirement for GNSS observations to be obtained exactly at the beginning or end time of LiDAR scans.
 6. Robustness to large outliers and high noise levels in GNSS observations.
 
+# Build
+
+## Prerequisites
+
+### C++14 Compier
+
+### ROS noetic
+
+### Eigen 3
+
+### GTSAM
+
+### [gnss_comm](https://github.com/HKUST-Aerial-Robotics/gnss_comm) with its [instuction](https://github.com/HKUST-Aerial-Robotics/gnss_comm#2-build-gnss_comm-library)
+
+## Make
+
+'''cd ~/catkin_ws/src/
+git clone https://github.com/Joanna-HE/LIGO..git'''
+
+'''cd ~/catkin_ws/
+source /PATH/TO/GNSS_COMM/DEVEL/.setup.bash
+catkin_make
+source ~/catkin_ws/devel/setup.bash'''
+
 # Demo
 **Performance on a sequence with severe LiDAR degeneracy**
 
