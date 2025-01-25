@@ -1,0 +1,114 @@
+common:
+    lid_topic: "/velodyne_points" 
+    imu_topic: "/imu/data" 
+    con_frame: false # true: if you need to combine several LiDAR frames into one
+    con_frame_num: 1 # the number of frames combined
+    scan_rate: 10
+
+preprocess:
+    lidar_type: 2
+    scan_line: 32
+    timestamp_unit: 0         # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
+    blind: 2.0 
+    det_range: 1000
+
+mapping:
+    imu_en: true
+    imu_time_inte: 0.0025 # = 1 / frequency of IMU
+    lidar_time_inte: 0.1
+    satu_acc: 30.0 # the saturation value of IMU's acceleration. not related to the units
+    satu_gyro: 35 # the saturation value of IMU's angular velocity. not related to the units
+    acc_norm: 9.805 # 1.0 for g as unit, 9.81 for m/s^2 as unit of the IMU's acceleration
+    lidar_meas_cov: 0.05 # 0.001; 0.01
+    acc_cov_output: 500
+    gyr_cov_output: 1000 
+    b_acc_cov: 0.0001 
+    b_gyr_cov: 0.0001 
+    imu_meas_acc_cov: 0.1 #0.1 # 0.1
+    imu_meas_omg_cov: 0.01 #0.01 # 0.1
+    plane_thr: 0.1 # 0.05, the threshold for plane criteria, the smaller, the flatter a plane
+    match_s: 81
+    ivox_grid_resolution: 2.0
+    gravity: [0.0, 0.0, -9.805] # # [0.0, 0.0, -9.787561] # gvins # 
+    init_with_imu: true
+    gravity_init: [0.0, 0.0, -9.805] # [0.0, 0.0, -9.81] # preknown gravity for unstationary start
+    extrinsic_T: [0.0, 0.0, 0.28]
+    extrinsic_R: [1.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    0.0, 0.0, 1.0]
+
+gnss:
+    gnss_enable: false
+    ephem_from_rinex: true
+    ephem_file_name: "dataTST.rnx"
+    obs_from_rinex: true
+    pvt_is_gt: false
+    gt_file_name: "UrbanNav_TST_GT_raw.txt"
+    gt_file_type: 2                    # 1: livox, 2: urban, 3: m2dgr
+    outlier_rejection: true # for offline initial and no lidar or broaden the outlier rejection threshold // can be modified as well
+    psr_dopp_weight: 1 # 10 1
+    cp_weight: 10 # 10
+    gnss_meas_topic: "/ublox_driver/range_meas"           # GNSS raw measurement topic
+    gnss_ephem_topic: "/ublox_driver/ephem"               # GPS, Galileo, BeiDou ephemeris
+    gnss_glo_ephem_topic: "/ublox_driver/glo_ephem"       # GLONASS ephemeris
+    gnss_iono_params_topic: "/ublox_driver/iono_params"   # GNSS broadcast ionospheric parameters
+    gnss_tp_info_topic: "/ublox_driver/time_pulse_info"   # PPS time info
+    rtk_pvt_topic: "/ublox_driver/receiver_pvt"           # gnss pvt soln msg
+    rtk_lla_topic: "/ublox_driver/receiver_lla"           # nav sat fix
+    gnss_elevation_thres: 15            # satellite elevation threshold (degree) 30
+    gnss_psr_std_thres: 5.0             # pseudo-range std threshold
+    gnss_dopp_std_thres: 5.0            # doppler std threshold
+    gnss_cp_std_thres: 5.0            # carrier phase std threshold
+    gnss_cp_time_thres: 100.0            # carrier phase time threshold  // try to increase this value: use more cp
+    gtsam_variable_thres: 30            # is it important that delete factor one frame by one frame?
+    gtsam_marg_variable_thres: 1
+    gnss_sample_period: 1
+    outlier_thres: 10 # 0.1 # make difference! 1 10
+    outlier_thres_init: 20 # 20 # make difference! 10 100
+    window_size: 10 # <= 10
+    prior_noise: 1000 # 1 10 100 1000 10000
+    marg_noise: 0.1 # 10 0.1
+    odo_noise: 10 
+    grav_noise: 1.0 # 0.1 0.5
+    psr_dopp_noise: 10.0
+    cp_noise: 0.1
+    gnss_ekf_noise: 0.01 # 0.01! 0.1
+    gnss_local_online_sync: false                       # if perform online synchronization betwen GNSS and local time
+    local_trigger_info_topic: "/external_trigger"   # external trigger info of the local sensor, if `gnss_local_online_sync` is 1
+    gnss_local_time_diff: 18.0 # 9.062 # ? yes # difference between GNSS and local time (s), if `gnss_local_online_sync` is 0 18.0 # should be 
+    gnss_iono_default_parameters: [0.1118E-07,  0.2235E-07, -0.4172E-06,  0.6557E-06, 0.1249E+06, -0.4424E+06,  0.1507E+07, -0.2621E+06]
+    gnss_extrinsic_T: [0.0, 0.86, -0.31]
+    # gnss_extrinsic_R: [ 1, 0, 0,
+    #                 0, 0, 1,
+    #                 0, -1, 0 ]
+    # gnss_extrinsic_R: [ 1, 0, 0,
+    #                 0, -1, 0,
+    #                 0, 0, -1 ]
+    gnss_extrinsic_R: [ 1, 0, 0,
+                    0, 1, 0,
+                    0, 0, 1 ]
+
+nmea:
+    nmea_enable: false
+    posit_odo_topic: "/ublox_driver/receiver_lla" # "/mavros/local_position/odom" #
+    ppp_std_thres: 1000.0
+    pos_noise: 1 # 1
+    nmea_weight: 1000.0 # 1000
+    nmea_local_time_diff: 18.0 
+    ppp_file_name: "TST.pos" # "deg2.pos" # ""
+    ppp_anc: [3959058.559396, -87615.730649, 4983325.235812] # logo 
+             # [-2152900.934855,4380649.467661,4091851.462459] # bri 
+             # [-2169505.899002,4385241.855870,4078231.236204] # out  
+
+odometry: 
+    publish_odometry_without_downsample: false
+
+publish:
+    path_en: true                 # false: close the path output
+    scan_publish_en: true         # false: close all the point cloud output
+    scan_bodyframe_pub_en: false  # true: output the point cloud scans in IMU-body-frame
+
+pcd_save:
+    pcd_save_en: false
+    interval: -1                 # how many LiDAR frames saved in each pcd file; 
+                                 # -1 : all frames will be saved in ONE pcd file, may lead to memory crash when having too much frames.
