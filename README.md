@@ -35,10 +35,10 @@ The codes of this repo are contributed by:
 
 ## Make
 
-'''cd ~/catkin_ws/src/
-git clone https://github.com/Joanna-HE/LIGO..git'''
+```cd ~/catkin_ws/src/
+git clone https://github.com/Joanna-HE/LIGO..git
 
-'''cd ~/catkin_ws/
+```cd ~/catkin_ws/
 source /PATH/TO/GNSS_COMM/DEVEL/.setup.bash
 catkin_make
 source ~/catkin_ws/devel/setup.bash'''
