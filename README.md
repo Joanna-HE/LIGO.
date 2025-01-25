@@ -35,13 +35,17 @@ The codes of this repo are contributed by:
 
 ## Make
 
-```cd ~/catkin_ws/src/
+### clone the code to catkin_ws workspace
+```
+cd ~/catkin_ws/src/
 git clone https://github.com/Joanna-HE/LIGO..git
 
-```cd ~/catkin_ws/
+### compile the package
+```
+cd ~/catkin_ws/
 source /PATH/TO/GNSS_COMM/DEVEL/.setup.bash
 catkin_make
-source ~/catkin_ws/devel/setup.bash'''
+source ~/catkin_ws/devel/setup.bash
 
 # Demo
 **Performance on a sequence with severe LiDAR degeneracy**
