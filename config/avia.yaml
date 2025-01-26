@@ -8,9 +8,9 @@ common:
 preprocess:
     lidar_type: 1 
     scan_line: 6 
-    timestamp_unit: 1 # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
-    blind: 0.50 # near bline area
-    det_range: 1000 # distance range
+    timestamp_unit: 1        # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
+    blind: 0.50              # near bline area
+    det_range: 1000          # distance range
 
 mapping:
     imu_en: true
@@ -63,12 +63,12 @@ gnss:
     gtsam_variable_thres: 30            # the window size for GNSS obs
     gtsam_marg_variable_thres: 1
     gnss_sample_period: 0.1             # = 1 / frequency of GNSS obs
-    outlier_thres: 10 # 1                # parameter for robust function of GNSS factors
+    outlier_thres: 1 # 1                # parameter for robust function of GNSS factors
     outlier_thres_init: 10 # 10         # parameter for robust fucntion of initial GNSS factors
     window_size: 10 # <= 10             # window size of GNSS observations used for intialization
     prior_noise: 1000 # 100             # factor cov for initial factors
     marg_noise: 0.1                     # factor cov for marginalized factors
-    odo_noise: 1 #1 10                # factor cov for LiDAR-Inertial factors
+    odo_noise: 1 # 0.1 10                # factor cov for LiDAR-Inertial factors
     grav_noise: 1.0 # 0.1 0.5           # factor cov for gravity factors
     psr_dopp_noise: 1.0                # factor cov for pseudo-range factors
     cp_noise: 0.01                       # factor cov for carrier-phase factors
