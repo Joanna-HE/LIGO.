@@ -1298,8 +1298,8 @@ int main(int argc, char** argv)
                         if (runtime_pos_log)
                         {
                             euler_cur = SO3ToEuler(kf_output.x_.rot);
-                            fout_out << setw(20) << Measures.lidar_beg_time - first_lidar_time << " " << euler_cur.transpose() << " " << kf_output.x_.pos.transpose() << " " << kf_output.x_.vel.transpose() \
-                            <<" "<<kf_output.x_.omg.transpose()<<" "<<kf_output.x_.acc.transpose()<<" "<<kf_output.x_.gravity.transpose()<<" "<<kf_output.x_.bg.transpose()<<" "<<kf_output.x_.ba.transpose()<<" "<<feats_undistort->points.size()<<endl;
+                            fout_out << setw(20) << Measures.lidar_beg_time - first_lidar_time << " " << kf_output.x_.pos.transpose() << " " << euler_cur.transpose() << " " << kf_output.x_.vel.transpose() \
+                            <<" "<<kf_output.x_.omg.transpose()<<" "<<kf_output.x_.acc.transpose()<<" "<<kf_output.x_.gravity.transpose()<<" "<<kf_output.x_.bg.transpose()<<" "<<kf_output.x_.ba.transpose() << endl;
                         }
                     }
                     std::vector<Eigen::Vector3d> lidarpoints;
@@ -1724,9 +1724,6 @@ int main(int argc, char** argv)
                 }
             }
             
-            // euler_cur = RotMtoEuler(rot_cur_lidar);
-            // geoQuat = tf::createQuaternionMsgFromRollPitchYaw
-            //                     (euler_cur(0), euler_cur(1), euler_cur(2));
             /******* Publish odometry downsample *******/
             if (!publish_odometry_without_downsample)
             {
@@ -1762,8 +1759,9 @@ int main(int argc, char** argv)
                             time_frame.push_back(lidar_end_time); //(time_predict_last_const);
                             est_poses.push_back(pos_r);
                         }
-                        fout_out << setw(20) << Measures.lidar_beg_time - first_lidar_time << " " << euler_cur.transpose() << " " << kf_output.x_.pos.transpose() << " " << kf_output.x_.vel.transpose() \
-                        <<" "<<state_out.omg.transpose()<<" "<<state_out.acc.transpose()<<" "<<state_out.gravity.transpose()<<" "<<state_out.bg.transpose()<<" "<<state_out.ba.transpose()<<" "<<feats_undistort->points.size()<<endl;
+                        euler_cur = SO3ToEuler(kf_output.x_.rot);
+                        fout_out << setw(20) << Measures.lidar_beg_time - first_lidar_time << " " << kf_output.x_.pos.transpose() << " " << euler_cur.transpose() << " " << kf_output.x_.vel.transpose() \
+                        <<" "<<state_out.omg.transpose()<<" "<<state_out.acc.transpose()<<" "<<state_out.gravity.transpose()<<" "<<state_out.bg.transpose()<<" "<<state_out.ba.transpose() << endl;
                     }
                 }
             }
@@ -1771,6 +1769,7 @@ int main(int argc, char** argv)
         status = ros::ok();
         loop_rate.sleep();
     }
+    fout_out.close();
     //--------------------------save map-----------------------------------
     /* 1. make sure you have enough memories
     /* 2. noted that pcd save will influence the real-time performences **/
@@ -1791,17 +1790,17 @@ int main(int argc, char** argv)
             {
                 Eigen::Vector3d ecef_r = enu_rot * est_poses[i] + first_pvt_used;
                 Eigen::Vector3d pos_enu = ecef2enu(first_lla_anc, ecef_r - first_pvt_anc);
-                fout_out << setw(20) << time_frame[i] - ppp_ecef[0][0] + 18.0 << " " << pos_enu.transpose() << endl; //"\n"; // p_gnss->pvt_time[0] + 18.0
+                fout_global << setw(20) << time_frame[i] - ppp_ecef[0][0] + 18.0 << " " << pos_enu.transpose() << endl; //"\n"; // p_gnss->pvt_time[0] + 18.0
             }
             else
             {
-                fout_out << setw(20) << time_frame[i] - time_frame[0] << " " << est_poses[i].transpose() << endl; // << " " << local_poses[i].transpose() << " " << euler_ext.transpose() << endl; //"\n"; // p_gnss->pvt_time[0] + 18.0
-                // fout_out << setw(20) << time_frame[i] - ppp_ecef[0][0] + 18.0 << " " << est_poses[i].transpose() << endl; //"\n"; // p_gnss->pvt_time[0] + 18.0
+                fout_global << setw(20) << time_frame[i] - time_frame[0] << " " << est_poses[i].transpose() << endl; // << " " << local_poses[i].transpose() << " " << euler_ext.transpose() << endl; //"\n"; // p_gnss->pvt_time[0] + 18.0
+                // fout_global << setw(20) << time_frame[i] - ppp_ecef[0][0] + 18.0 << " " << est_poses[i].transpose() << endl; //"\n"; // p_gnss->pvt_time[0] + 18.0
             }
             // printf("time: %f, pos: %f %f %f\n", ppp_ecef[0][0] + 18.0, est_poses[i](0), est_poses[i](1), est_poses[i](2));
             // Eigen::Vector3d euler_ext = SO3ToEuler(local_rots[i]);
         }
-        fout_out.close();
+        fout_global.close();
     }
 
     for (int i = 0; i < p_gnss->pvt_time.size(); i++)
@@ -1817,31 +1816,6 @@ int main(int argc, char** argv)
     }
     fout_ppp.close();
     #endif
-    for (int i = 0; i < 1; i++) // time_frame.size(); i++)
-    {
-        if (!nolidar)
-        {
-            Eigen::Vector3d pos_r = local_rots[i] * p_gnss->Tex_imu_r + local_poses[i]; // maybe improper.normalized()
-            Eigen::Matrix3d enu_rot = p_gnss->p_assign->isamCurrentEstimate.at<gtsam::Rot3>(P(0)).matrix();
-            Eigen::Vector3d anc_cur = p_gnss->p_assign->isamCurrentEstimate.at<gtsam::Vector3>(E(0));
-            Eigen::Vector3d pos_enu = p_gnss->local2enu(enu_rot, anc_cur, pos_r);
-            fout_spp << setw(20) << time_frame[i] - ppp_ecef[0][0] + 18.0 << " " << enu_rot << " " << anc_cur.transpose() << " " << p_gnss->p_assign->ave_std << " " << 
-            p_gnss->p_assign->isamCurrentEstimate.at<gtsam::Vector1>(C(p_gnss->frame_num-1)) << " " << p_gnss->p_assign->isamCurrentEstimate.at<gtsam::Vector4>(B(p_gnss->frame_num-1)).transpose() << endl; // pos_enu.transpose() << endl; // "\n"; // p_gnss->pvt_time[0] + 18.0
-        }
-        else
-        {
-            fout_spp << setw(20) << time_frame[i] - ppp_ecef[0][0] + 18.0 << " " << p_gnss->p_assign->ave_std << " " << endl;
-            // fout_spp << setw(20) << ppp_ecef[0][0] << " " << p_gnss->pvt_time[0] << endl;
-        }
-    }
-    fout_spp.close();
-    // for (size_t i = 0; i < time_log_counter; i++)
-    {
-        // fout_time << setw(20) << ppp_ecef[0][0] << " " << p_gnss->pvt_time[0] << " " << p_gnss->pvt_time[0] - ppp_ecef[0][0] + 18.0 << endl;
-        fout_time << setw(20) << time_frame[0] << " " << p_gnss->pvt_time[0] << " " << p_gnss->pvt_time[0] - time_frame[0] << endl;
-        // fout_time << setw(20) << s_plot[i] << " " << s_plot3[i] << endl;
-    }
-    fout_time.close();
     
     return 0;
 }

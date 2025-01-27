@@ -107,7 +107,7 @@ std::vector<double> time_frame;
 
 MeasureGroup Measures;
 
-ofstream fout_out, fout_rtk, fout_spp, fout_ppp, fout_time; 
+ofstream fout_out, fout_rtk, fout_global, fout_ppp; 
 
 void readParameters(ros::NodeHandle &nh)
 {
@@ -310,14 +310,17 @@ Eigen::Matrix<double, 3, 1> SO3ToEuler(const SO3 &rot)
 void open_file()
 {
     fout_out.open(DEBUG_FILE_DIR("mat_out.txt"),ios::out);
-    fout_time.open(DEBUG_FILE_DIR("time_out.txt"),ios::out);
     if (GNSS_ENABLE)
     {
         fout_rtk.open(DEBUG_FILE_DIR("pos_rtk.txt"),ios::out);
-        fout_spp.open(DEBUG_FILE_DIR("pos_est.txt"),ios::out);
-        fout_spp.setf(ios::fixed, ios::floatfield);
-        fout_spp.precision(6);
+        fout_rtk.setf(ios::fixed, ios::floatfield);
+        fout_rtk.precision(6);
+        fout_global.open(DEBUG_FILE_DIR("pos_est.txt"),ios::out);
+        fout_global.setf(ios::fixed, ios::floatfield);
+        fout_global.precision(6);
         fout_ppp.open(DEBUG_FILE_DIR("pos_ppp.txt"),ios::out);
+        fout_ppp.setf(ios::fixed, ios::floatfield);
+        fout_ppp.precision(6);
     }
     if (fout_out)
         cout << "~~~~"<<ROOT_DIR<<" file opened" << endl;

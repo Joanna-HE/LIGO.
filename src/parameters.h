@@ -135,7 +135,7 @@ extern std::vector<Eigen::Vector3d> local_poses;
 extern std::vector<Eigen::Matrix3d> local_rots;
 extern std::vector<double> time_frame;
 
-extern ofstream fout_out, fout_rtk, fout_spp, fout_ppp, fout_time;
+extern ofstream fout_out, fout_rtk, fout_global, fout_ppp;
 void readParameters(ros::NodeHandle &n);
 void open_file();
 Eigen::Matrix<double, 3, 1> SO3ToEuler(const SO3 &orient);
