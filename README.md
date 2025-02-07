@@ -4,6 +4,8 @@
 
 Code, paper, video are coming soon......
 
+Our paper is published on [TRO](https://github.com/Joanna-HE/LIGO./blob/main/paper/LIGO_A_Tightly_Coupled_LiDAR-Inertial-GNSS_Odometry_Based_on_a_Hierarchy_Fusion_Framework_for_Global_Localization_With_Real-Time_Mapping.pdf)
+
 # Developers:
 The codes of this repo are contributed by:
 [Dongjiao He (贺东娇)](https://github.com/Joanna-HE)
