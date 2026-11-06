@@ -358,14 +358,14 @@ void GtfromTXT_URBAN(const std::string &gt_filepath, std::vector<Eigen::Vector4d
         double week, time, d, m, s;
         std::getline(ss, token, ' ');
         std::getline(ss, token, ' ');
-        week = std::stof(token);
+        week = std::stod(token);
         // std::cout << "week:" << week << std::endl;
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
-        time = std::stof(token);
+        time = std::stod(token);
         // std::cout << "time:" << time << std::endl;
         gtime_t gt_gps_time = gpst2time(week, time);
         Eigen::Vector4d gt_vec;
@@ -378,20 +378,20 @@ void GtfromTXT_URBAN(const std::string &gt_filepath, std::vector<Eigen::Vector4d
         }
         // std::getline(ss, token, ' ');
         // std::getline(ss, token, ' ');
-        d = std::stof(token); //.c_str());
+        d = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
-        m = std::stof(token); //.c_str());
+        m = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
         // std::cout << "line 286:" << token << std::endl;
-        s = std::stof(token); //.c_str());
+        s = std::stod(token); //.c_str());
         // std::cout << "line 287:" << d << ";" << m << ";" << s << std::endl;
         gt_vec(1) = d + m / 60 + s / 3600; // std::atof(token.c_str()); // line.at(3); // la
         // std::cout << "line 289:" << gt_vec(1) << std::endl;
@@ -401,19 +401,19 @@ void GtfromTXT_URBAN(const std::string &gt_filepath, std::vector<Eigen::Vector4d
         {
             std::getline(ss, token, ' ');
         }
-        d = std::stof(token); //.c_str());
+        d = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
-        m = std::stof(token); //.c_str());
+        m = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
-        s = std::stof(token); //.c_str());
+        s = std::stod(token); //.c_str());
         // std::cout << "line 287:" << d << ";" << m << ";" << s << std::endl;
         gt_vec(2) = d + m / 60 + s / 3600; // std::atof(token.c_str()); // line.at(4); // long
         // std::cout << "line 292:" << gt_vec(2) << std::endl;
@@ -460,14 +460,14 @@ void PPPfromTXT(const std::string &ppp_filepath, std::vector<Eigen::Matrix<doubl
         double week, time;
         // std::getline(ss, token, ' ');
         std::getline(ss, token, ' ');
-        week = std::stof(token);
+        week = std::stod(token);
         // std::cout << "week:" << week << std::endl;
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
-        time = std::stof(token);
+        time = std::stod(token);
         // std::cout << "time:" << time << std::endl;
         gtime_t gt_gps_time = gpst2time(week, time);
         Eigen::Vector4d gt_vec;
@@ -482,20 +482,20 @@ void PPPfromTXT(const std::string &ppp_filepath, std::vector<Eigen::Matrix<doubl
         }
         // std::getline(ss, token, ' ');
         // std::getline(ss, token, ' ');
-        double ecef_x = std::stof(token); //.c_str());
+        double ecef_x = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
-        double ecef_y = std::stof(token); //.c_str());
+        double ecef_y = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
         // std::cout << "line 286:" << token << std::endl;
-        double ecef_z = std::stof(token); //.c_str());
+        double ecef_z = std::stod(token); //.c_str());
         Eigen::Vector3d ecef;
         ecef << ecef_x, ecef_y, ecef_z;
 
@@ -507,19 +507,19 @@ void PPPfromTXT(const std::string &ppp_filepath, std::vector<Eigen::Matrix<doubl
                 std::getline(ss, token, ' ');
             }
         }
-        sol_vec(4) = std::stof(token); //.c_str());
+        sol_vec(4) = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
                 std::getline(ss, token, ' ');
         }
-        sol_vec(5) = std::stof(token); //.c_str());
+        sol_vec(5) = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
                 std::getline(ss, token, ' ');
         }
-        sol_vec(6) = std::stof(token); //.c_str());
+        sol_vec(6) = std::stod(token); //.c_str());
         // std::cout << "line 287:" << d << ";" << m << ";" << s << std::endl;
         gt_vec.segment<3>(1) = ecef; 
         ppp_ecef.push_back(gt_vec);
@@ -671,20 +671,20 @@ void GtfromTXT_M2DGR(const std::string &gt_filepath, std::vector<Eigen::Vector4d
         }
         // std::getline(ss, token, ' ');
         // std::getline(ss, token, ' ');
-        gt_vec(1) = std::stof(token); //.c_str());
+        gt_vec(1) = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
-        gt_vec(2) = std::stof(token); //.c_str());
+        gt_vec(2) = std::stod(token); //.c_str());
         std::getline(ss, token, ' ');
         while (token.empty())
         {
             std::getline(ss, token, ' ');
         }
         // std::cout << "line 286:" << token << std::endl;
-        gt_vec(3) = std::stof(token); //.c_str());
+        gt_vec(3) = std::stod(token); //.c_str());
         // std::cout << "line 287:" << d << ";" << m << ";" << s << std::endl;
         // gt_vec.segment<3>(1) = geo2ecef(gt_vec.segment<3>(1));
         gt.push_back(gt_vec);
@@ -725,20 +725,20 @@ void GtfromTXT_LIVOX(const std::string &gt_filepath, std::vector<Eigen::Vector4d
         }
         // std::getline(ss, token, ' ');
         // std::getline(ss, token, ' ');
-        gt_vec(1) = std::stof(token); //.c_str());
+        gt_vec(1) = std::stod(token); //.c_str());
         std::getline(ss, token, ',');
         while (token.empty())
         {
             std::getline(ss, token, ',');
         }
-        gt_vec(2) = std::stof(token); //.c_str());
+        gt_vec(2) = std::stod(token); //.c_str());
         std::getline(ss, token, ',');
         while (token.empty())
         {
             std::getline(ss, token, ',');
         }
         // std::cout << "line 286:" << token << std::endl;
-        gt_vec(3) = std::stof(token); //.c_str());
+        gt_vec(3) = std::stod(token); //.c_str());
         // std::cout << "line 287:" << d << ";" << m << ";" << s << std::endl;
         // gt_vec.segment<3>(1) = geo2ecef(gt_vec.segment<3>(1));
         gt.push_back(gt_vec);

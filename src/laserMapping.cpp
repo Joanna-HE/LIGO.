@@ -35,6 +35,8 @@
  */
 
 // #include <so3_math.h>
+#include <csignal>
+#include <filesystem>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <visualization_msgs/Marker.h>
@@ -48,7 +50,6 @@
 #include "li_initialization.h"
 #include <malloc.h>
 // #include <cv_bridge/cv_bridge.h>
-#include <opencv2/opencv.hpp>
 #include "chi-square.h"
 // #include <ros/console.h>
 
@@ -67,7 +68,8 @@ nav_msgs::OdometryPtr nmea_cur;
 Eigen::Vector3d first_pvt_anc, first_lla_anc;
 Eigen::Vector3d first_pvt_used, first_lla_used;
 
-bool  flg_reset = false, flg_exit = false;
+bool  flg_reset = false;
+volatile std::sig_atomic_t flg_exit = 0;
 
 //surf feature in map
 PointCloudXYZI::Ptr feats_undistort(new PointCloudXYZI());
@@ -84,7 +86,7 @@ geometry_msgs::PoseStamped msg_body_pose;
 
 void SigHandle(int sig)
 {
-    flg_exit = true;
+    flg_exit = 1;
     ROS_WARN("catch sig %d", sig);
     sig_buffer.notify_all();
 }
@@ -296,6 +298,9 @@ int main(int argc, char** argv)
     ros::AsyncSpinner spinner(0);
     spinner.start();
     readParameters(nh);
+    // Make sure the output directories exist, otherwise logs and maps are silently dropped.
+    std::filesystem::create_directories(string(ROOT_DIR) + "Log");
+    std::filesystem::create_directories(string(ROOT_DIR) + "PCD");
     cout<<"lidar_type: "<<lidar_type<<endl;
     ivox_ = std::make_shared<IVoxType>(ivox_options_);
     ivox_last_ = std::make_shared<IVoxType>(ivox_options_); //(*ivox_);
@@ -482,6 +487,11 @@ int main(int argc, char** argv)
     }
     
     PPPfromTXT(LOCAL_FILE_DIR(ppp_fname), ppp_sol, ppp_ecef);
+    if (NMEA_ENABLE && ppp_ecef.empty())
+    {
+        ROS_ERROR("NMEA is enabled but no PPP solution could be read from %s", LOCAL_FILE_DIR(ppp_fname).c_str());
+        return 1;
+    }
     if (NMEA_ENABLE)
     {
 
