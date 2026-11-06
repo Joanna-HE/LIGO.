@@ -1,0 +1,9 @@
+.git
+build
+devel
+paper
+image
+*.pdf
+Log/*.txt
+PCD
+output

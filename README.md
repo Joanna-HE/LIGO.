@@ -77,29 +77,107 @@ Please follow the *Differential GNSS* section shown in [ublox driver](https://gi
 
 # Build
 
-## Prerequisites
+## Option A: Docker (recommended)
 
-We test LIGO on ubuntu 20.04 with ROS noetic, and C++17 compiler & Eigen 3 & GTSAM 4 & opencv 4.2.0 & pcl 1.10  
+The image bundles Ubuntu 20.04, ROS Noetic and every dependency: Ceres 2.1 (built from source), GTSAM 4.0, Sophus, Livox SDK + `livox_ros_driver`, and `gnss_comm`.
 
-### Install Boost using command sudo apt-get install libboost-all-dev
+### Requirements
 
-### Install [Livox Driver](https://github.com/Livox-SDK/livox_ros_driver)
+- Docker installed, and your user in the `docker` group (`sudo usermod -aG docker $USER`, then log out and back in)
+- An X11 desktop session if you want RViz
+- About 10 GB of free disk space (the final image is ~5 GB)
 
-### Install [gnss_comm](https://github.com/HKUST-Aerial-Robotics/gnss_comm) with its [instuction](https://github.com/HKUST-Aerial-Robotics/gnss_comm#2-build-gnss_comm-library)
+### 1. Build the image
 
-## Make
+Run this from the repository root. The first build takes roughly 15–30 minutes, mostly compiling Ceres. Later builds that only change LIGO take a few minutes because the dependency layers are cached.
 
-### clone the code to catkin_ws workspace
+```bash
+cd LIGO.
+docker build -f docker/Dockerfile -t ligo:noetic .
+# Optional: --build-arg JOBS=16 sets the number of parallel compile jobs (default 8)
 ```
+
+### 2. Run LIGO
+
+`docker/run.sh` starts the container with host networking, so ROS nodes and `rosbag play` on the host can talk to it directly. It also forwards your X11 display for RViz and runs as your host user, so output files are not owned by root.
+
+```bash
+# Start LIGO + RViz with a given launch file
+docker/run.sh roslaunch ligo mapping_avia.launch
+
+# Pick a config file for the RoboSense launch file
+docker/run.sh roslaunch ligo mapping_robosense.launch config:=m2dgr_bridge2.yaml
+
+# Open a shell inside the container; DATA_DIR is mounted read-only at /data
+DATA_DIR=~/bags docker/run.sh bash
+#   (inside)  roslaunch ligo mapping_avia.launch &
+#             rosbag play /data/your_sequence.bag
+```
+
+### 3. Run on a rosbag end to end
+
+`docker/run_bag.sh` starts LIGO, plays the bag, then shuts the node down cleanly so the trajectory files are written.
+
+```bash
+docker/run_bag.sh <bag> [launch file] [config yaml] [rviz: true|false]
+
+# Example: M2DGR-plus Bridge_02
+docker/run_bag.sh ~/datasets/bridge_02.bag mapping_robosense.launch m2dgr_bridge2.yaml
+
+# Headless, at half speed
+RATE=0.5 docker/run_bag.sh ~/datasets/bridge_02.bag mapping_robosense.launch m2dgr_bridge2.yaml false
+```
+
+### Outputs
+
+| Host path | Contents |
+|---|---|
+| `./output/Log/` | Trajectories: `pos_est.txt` (LIGO estimate), `pos_rtk.txt` (RTK / ground truth), `pos_ppp.txt`, `mat_out.txt` |
+| `./output/PCD/` | Point cloud maps (set `pcd_save_en: true` in the config to save them) |
+
+`./output` is the `output/` folder in the repository root, wherever you run the scripts from. Set `OUTPUT_DIR=/some/path` to write the outputs somewhere else.
+
+### Environment variables
+
+| Variable | Used by | Default | Meaning |
+|---|---|---|---|
+| `IMAGE` | `run.sh`, `run_bag.sh` | `ligo:noetic` | Docker image to run |
+| `DATA_DIR` | `run.sh` | current directory | Host folder mounted read-only at `/data` (`run_bag.sh` sets it to the bag's folder) |
+| `OUTPUT_DIR` | `run.sh`, `run_bag.sh` | `output/` in the repository | Host folder that receives `Log/` and `PCD/` |
+| `RATE` | `run_bag.sh` | `1.0` | `rosbag play` rate |
+
+### Troubleshooting
+
+- **RViz window does not appear:** run `xhost +local:` on the host, and launch from a terminal inside your desktop session (not over plain SSH).
+- **Code or config changes have no effect:** the source, `config/` and `Data/` are copied into the image at build time, so run `docker build` again after editing them.
+- **`permission denied` talking to the Docker daemon:** your user is not in the `docker` group (see Requirements).
+
+## Option B: Native build
+
+### Prerequisites
+
+Tested on Ubuntu 20.04 with ROS Noetic, a C++17 compiler, and:
+
+| Dependency | Version | Notes |
+|---|---|---|
+| Eigen | 3.3+ | `sudo apt install libeigen3-dev` |
+| PCL | 1.10 | ships with ROS Noetic |
+| Ceres Solver | **2.1+** | the apt package on 20.04 (1.14) is too old; build from source |
+| GTSAM | 4.0.x | e.g. `ppa:borglab/gtsam-release-4.0` |
+| Sophus | any | `sudo apt install ros-noetic-sophus` |
+| Boost | | `sudo apt install libboost-all-dev` |
+| [Livox ROS driver](https://github.com/Livox-SDK/livox_ros_driver) | | requires [Livox-SDK](https://github.com/Livox-SDK/Livox-SDK) |
+| [gnss_comm](https://github.com/HKUST-Aerial-Robotics/gnss_comm) | | see its [instructions](https://github.com/HKUST-Aerial-Robotics/gnss_comm#2-build-gnss_comm-library) |
+
+### Compile
+
+```bash
 cd ~/catkin_ws/src/
 git clone https://github.com/Joanna-HE/LIGO..git
-```
-### compile the package
-```
 cd ~/catkin_ws/
-source /PATH/TO/LIVOX_DRIVER/DEVEL/.setup.bash
-source /PATH/TO/GNSS_COMM/DEVEL/.setup.bash
-catkin_make
+source /PATH/TO/LIVOX_DRIVER/devel/setup.bash
+source /PATH/TO/GNSS_COMM/devel/setup.bash
+catkin_make -DCMAKE_BUILD_TYPE=Release
 source ~/catkin_ws/devel/setup.bash
 ```
 

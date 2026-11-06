@@ -18,6 +18,5 @@
 	<node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find ligo)/rviz_cfg/loam_livox.rviz" />
 	</group>
 
-	launch-prefix="valgrind" 
 
 </launch>

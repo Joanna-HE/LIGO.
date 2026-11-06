@@ -1,9 +1,10 @@
 <launch>
 
 	<arg name="rviz" default="true" />
+	<arg name="config" default="robosense.yaml" />
 
 	<node pkg="ligo" type="ligo_mapping" name="laserMapping" output="screen">
-	<rosparam command="load" file="$(find ligo)/config/robosense.yaml" />
+	<rosparam command="load" file="$(find ligo)/config/$(arg config)" />
 	<param name="prop_at_freq_of_imu" type="bool" value="1"/>
 	<param name="check_satu" type="bool" value="1"/>
 	<param name="init_map_size" type="int" value="10"/>
@@ -18,6 +19,5 @@
 	<node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find ligo)/rviz_cfg/loam_livox.rviz" />
 	</group>
 
-	launch-prefix="valgrind" 
 
 </launch>

@@ -56,7 +56,6 @@
 #include <csignal>
 #include <unistd.h>
 #include <ivox/ivox3d.h>
-#include <Python.h>
 #include <condition_variable>
 #include <sensor_msgs/Imu.h>
 #include <pcl/common/transforms.h>
