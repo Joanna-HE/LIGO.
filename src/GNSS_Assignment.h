@@ -45,7 +45,6 @@
 #include <gnss_comm/gnss_ros.hpp>
 #include <common_lib.h>
 #include <numeric>
-#include <opencv2/core/eigen.hpp>
 #include <gtsam/inference/Symbol.h>
 #include <gtsam/nonlinear/Values.h>
 #include <gtsam/geometry/Rot3.h>

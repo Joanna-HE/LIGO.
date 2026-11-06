@@ -1,47 +1,36 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>ligo</name>
-  <version>0.0.0</version>
-
+  <version>1.0.0</version>
   <description>
-    This is a modified version of LOAM which is original algorithm
-    is described in the following paper:
-    J. Zhang and S. Singh. LOAM: Lidar Odometry and Mapping in Real-time.
-      Robotics: Science and Systems Conference (RSS). Berkeley, CA, July 2014.
+    LIGO: Tightly coupled LiDAR-Inertial-GNSS odometry based on a hierarchy fusion
+    framework for global localization with real-time mapping.
   </description>
 
-  <maintainer email="dev@livoxtech.com">claydergc</maintainer>
-
+  <maintainer email="hdj65822@connect.hku.hk">Dongjiao He</maintainer>
+  <author email="hdj65822@connect.hku.hk">Dongjiao He</author>
   <license>BSD</license>
 
-  <author email="hdj65822@connect.hku.hk">Dongjiao He</author>
-  
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>tf</build_depend>
-  <build_depend>pcl_ros</build_depend>
-  <build_depend>livox_ros_driver</build_depend>
-  <build_depend>message_generation</build_depend>
 
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>nav_msgs</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>tf</run_depend>
-  <run_depend>pcl_ros</run_depend>
-  <run_depend>livox_ros_driver</run_depend>
-  <run_depend>message_runtime</run_depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>tf</depend>
+  <depend>pcl_ros</depend>
+  <depend>pcl_conversions</depend>
+  <depend>eigen_conversions</depend>
+  <depend>livox_ros_driver</depend>
+  <depend>gnss_comm</depend>
+  <depend>sophus</depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>rviz</exec_depend>
 
   <test_depend>rostest</test_depend>
   <test_depend>rosbag</test_depend>
-
-  <export>
-  </export>
 </package>
