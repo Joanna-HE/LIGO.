@@ -77,29 +77,51 @@ Please follow the *Differential GNSS* section shown in [ublox driver](https://gi
 
 # Build
 
-## Prerequisites
+## Option A: Docker (recommended)
 
-We test LIGO on ubuntu 20.04 with ROS noetic, and C++17 compiler & Eigen 3 & GTSAM 4 & opencv 4.2.0 & pcl 1.10  
+The provided image bundles ROS Noetic and every dependency (Ceres 2.1, GTSAM 4.0, Sophus, Livox SDK + `livox_ros_driver`, `gnss_comm`).
 
-### Install Boost using command sudo apt-get install libboost-all-dev
+```bash
+cd LIGO.
+docker build -f docker/Dockerfile -t ligo:noetic .      # add --build-arg JOBS=N to control parallelism
 
-### Install [Livox Driver](https://github.com/Livox-SDK/livox_ros_driver)
+# Launch LIGO + RViz (uses host networking, so `rosbag play` on the host works directly)
+docker/run.sh roslaunch ligo mapping_avia.launch
 
-### Install [gnss_comm](https://github.com/HKUST-Aerial-Robotics/gnss_comm) with its [instuction](https://github.com/HKUST-Aerial-Robotics/gnss_comm#2-build-gnss_comm-library)
-
-## Make
-
-### clone the code to catkin_ws workspace
+# Or open a shell with a folder of bags mounted read-only at /data
+DATA_DIR=~/bags docker/run.sh bash
+#   (inside) roslaunch ligo mapping_avia.launch &  rosbag play /data/xxx.bag
 ```
+
+Trajectories (`Log/`) and saved maps (`PCD/`) are written to `./output` on the host.
+If RViz cannot open a window, run `xhost +local:` on the host first.
+
+## Option B: Native build
+
+### Prerequisites
+
+Tested on Ubuntu 20.04 with ROS Noetic, a C++17 compiler, and:
+
+| Dependency | Version | Notes |
+|---|---|---|
+| Eigen | 3.3+ | `sudo apt install libeigen3-dev` |
+| PCL | 1.10 | ships with ROS Noetic |
+| Ceres Solver | **2.1+** | the apt package on 20.04 (1.14) is too old; build from source |
+| GTSAM | 4.0.x | e.g. `ppa:borglab/gtsam-release-4.0` |
+| Sophus | any | `sudo apt install ros-noetic-sophus` |
+| Boost | | `sudo apt install libboost-all-dev` |
+| [Livox ROS driver](https://github.com/Livox-SDK/livox_ros_driver) | | requires [Livox-SDK](https://github.com/Livox-SDK/Livox-SDK) |
+| [gnss_comm](https://github.com/HKUST-Aerial-Robotics/gnss_comm) | | see its [instructions](https://github.com/HKUST-Aerial-Robotics/gnss_comm#2-build-gnss_comm-library) |
+
+### Compile
+
+```bash
 cd ~/catkin_ws/src/
 git clone https://github.com/Joanna-HE/LIGO..git
-```
-### compile the package
-```
 cd ~/catkin_ws/
-source /PATH/TO/LIVOX_DRIVER/DEVEL/.setup.bash
-source /PATH/TO/GNSS_COMM/DEVEL/.setup.bash
-catkin_make
+source /PATH/TO/LIVOX_DRIVER/devel/setup.bash
+source /PATH/TO/GNSS_COMM/devel/setup.bash
+catkin_make -DCMAKE_BUILD_TYPE=Release
 source ~/catkin_ws/devel/setup.bash
 ```
 
