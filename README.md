@@ -79,22 +79,78 @@ Please follow the *Differential GNSS* section shown in [ublox driver](https://gi
 
 ## Option A: Docker (recommended)
 
-The provided image bundles ROS Noetic and every dependency (Ceres 2.1, GTSAM 4.0, Sophus, Livox SDK + `livox_ros_driver`, `gnss_comm`).
+The image bundles Ubuntu 20.04, ROS Noetic and every dependency: Ceres 2.1 (built from source), GTSAM 4.0, Sophus, Livox SDK + `livox_ros_driver`, and `gnss_comm`.
+
+### Requirements
+
+- Docker installed, and your user in the `docker` group (`sudo usermod -aG docker $USER`, then log out and back in)
+- An X11 desktop session if you want RViz
+- About 10 GB of free disk space (the final image is ~5 GB)
+
+### 1. Build the image
+
+Run this from the repository root. The first build takes roughly 15–30 minutes, mostly compiling Ceres. Later builds that only change LIGO take a few minutes because the dependency layers are cached.
 
 ```bash
 cd LIGO.
-docker build -f docker/Dockerfile -t ligo:noetic .      # add --build-arg JOBS=N to control parallelism
-
-# Launch LIGO + RViz (uses host networking, so `rosbag play` on the host works directly)
-docker/run.sh roslaunch ligo mapping_avia.launch
-
-# Or open a shell with a folder of bags mounted read-only at /data
-DATA_DIR=~/bags docker/run.sh bash
-#   (inside) roslaunch ligo mapping_avia.launch &  rosbag play /data/xxx.bag
+docker build -f docker/Dockerfile -t ligo:noetic .
+# Optional: --build-arg JOBS=16 sets the number of parallel compile jobs (default 8)
 ```
 
-Trajectories (`Log/`) and saved maps (`PCD/`) are written to `./output` on the host.
-If RViz cannot open a window, run `xhost +local:` on the host first.
+### 2. Run LIGO
+
+`docker/run.sh` starts the container with host networking, so ROS nodes and `rosbag play` on the host can talk to it directly. It also forwards your X11 display for RViz and runs as your host user, so output files are not owned by root.
+
+```bash
+# Start LIGO + RViz with a given launch file
+docker/run.sh roslaunch ligo mapping_avia.launch
+
+# Pick a config file for the RoboSense launch file
+docker/run.sh roslaunch ligo mapping_robosense.launch config:=m2dgr_bridge2.yaml
+
+# Open a shell inside the container; DATA_DIR is mounted read-only at /data
+DATA_DIR=~/bags docker/run.sh bash
+#   (inside)  roslaunch ligo mapping_avia.launch &
+#             rosbag play /data/your_sequence.bag
+```
+
+### 3. Run on a rosbag end to end
+
+`docker/run_bag.sh` starts LIGO, plays the bag, then shuts the node down cleanly so the trajectory files are written.
+
+```bash
+docker/run_bag.sh <bag> [launch file] [config yaml] [rviz: true|false]
+
+# Example: M2DGR-plus Bridge_02
+docker/run_bag.sh ~/datasets/bridge_02.bag mapping_robosense.launch m2dgr_bridge2.yaml
+
+# Headless, at half speed
+RATE=0.5 docker/run_bag.sh ~/datasets/bridge_02.bag mapping_robosense.launch m2dgr_bridge2.yaml false
+```
+
+### Outputs
+
+| Host path | Contents |
+|---|---|
+| `./output/Log/` | Trajectories: `pos_est.txt` (LIGO estimate), `pos_rtk.txt` (RTK / ground truth), `pos_ppp.txt`, `mat_out.txt` |
+| `./output/PCD/` | Point cloud maps (set `pcd_save_en: true` in the config to save them) |
+
+`./output` is the `output/` folder in the repository root, wherever you run the scripts from. Set `OUTPUT_DIR=/some/path` to write the outputs somewhere else.
+
+### Environment variables
+
+| Variable | Used by | Default | Meaning |
+|---|---|---|---|
+| `IMAGE` | `run.sh`, `run_bag.sh` | `ligo:noetic` | Docker image to run |
+| `DATA_DIR` | `run.sh` | current directory | Host folder mounted read-only at `/data` (`run_bag.sh` sets it to the bag's folder) |
+| `OUTPUT_DIR` | `run.sh`, `run_bag.sh` | `output/` in the repository | Host folder that receives `Log/` and `PCD/` |
+| `RATE` | `run_bag.sh` | `1.0` | `rosbag play` rate |
+
+### Troubleshooting
+
+- **RViz window does not appear:** run `xhost +local:` on the host, and launch from a terminal inside your desktop session (not over plain SSH).
+- **Code or config changes have no effect:** the source, `config/` and `Data/` are copied into the image at build time, so run `docker build` again after editing them.
+- **`permission denied` talking to the Docker daemon:** your user is not in the `docker` group (see Requirements).
 
 ## Option B: Native build
 
