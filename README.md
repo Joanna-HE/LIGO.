@@ -24,7 +24,7 @@ The codes of this repo are contributed by:
 5. No requirement for GNSS observations to be obtained exactly at the beginning or end time of LiDAR scans.
 6. Robustness to large outliers and high noise levels in GNSS observations.
 
-**Sorry there are so many parameters to be adjusted!**
+**Sorry there are so many parameters to be adjusted due to the fusion at a raw level**
 
 # Hardware setups for self-collected datasets
 
