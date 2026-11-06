@@ -2,8 +2,8 @@
 
 **LIGO: Tightly Coupled LiDAR-Inertial-GNSS Odometry based on a Hierarchy Fusion Framework for Global Localization with Real-time Mapping**
 
-Code, paper, video are coming soon......
-instruction for using will be detailed soon
+Please check the issue created by me, it may answer your questions.
+Instruction for using will be detailed soon
 
 Our paper is published on [TRO](https://github.com/Joanna-HE/LIGO./blob/main/paper/LIGO_A_Tightly_Coupled_LiDAR-Inertial-GNSS_Odometry_Based_on_a_Hierarchy_Fusion_Framework_for_Global_Localization_With_Real-Time_Mapping.pdf)
 
