@@ -2,7 +2,7 @@
 
 **LIGO: Tightly Coupled LiDAR-Inertial-GNSS Odometry based on a Hierarchy Fusion Framework for Global Localization with Real-time Mapping**
 
-Please check the issue created by me (Joanna He), it may answer your questions. Moreover, I will ask Claude to help me refine the code...
+Please check the issue created by me (Joanna He), it may answer your questions.
 
 Please check if the timestamp for groundtruth and estimation are matched when evaluating.
 
